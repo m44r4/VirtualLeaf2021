@@ -12,6 +12,12 @@ struct PyAdapter::PyBridge {
     py::object instance;   // the cached Python object, e.g. a TestModel()
 };
 
+PYBIND11_EMBEDDED_MODULE(virtualleaf, m) {
+    py::class_<CellBase>(m, "CellBase")
+        .def("cell_type", &CellBase::CellType);
+}
+
+
 PyAdapter::PyAdapter() {
     qDebug() << "Hello from PyAdapter" << this;
 
@@ -19,6 +25,8 @@ PyAdapter::PyAdapter() {
     qDebug() << "Python interpreter initialized" << this;
 
     bridge = new PyBridge();
+
+    py::module_::import("virtualleaf");
 
     // Make our python_models folder visible to Python's import system
     py::module_::import("sys").attr("path").attr("insert")(0, "../python_models");
@@ -43,6 +51,8 @@ PyAdapter::~PyAdapter() {
 
 }
 
+
+
 QString PyAdapter::ModelID(void) {
     std::string id = bridge->instance.attr("model_id")().cast<std::string>();
     return QString::fromStdString(id);}
@@ -51,6 +61,7 @@ int PyAdapter::NChem(void) {
     return bridge->instance.attr("n_chem")().cast<int>();}
 
 void PyAdapter::CellHouseKeeping(CellBase *c) {
+    bridge->instance.attr("cell_housekeeping")(c);
 }
 
 void PyAdapter::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {

@@ -3,4 +3,7 @@ class TestModel:
         return "Test Model From Python"
 
     def n_chem(self):
-        return 40
+        return 6
+    
+    def cell_housekeeping(self, cell):
+        print(cell.cell_type())
