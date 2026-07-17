@@ -1,4 +1,3 @@
-#
 #  This file is part of the Virtual Leaf.
 #
 #  The Virtual Leaf is free software: you can redistribute it and/or modify
@@ -16,27 +15,23 @@
 #
 #  Copyright 2010 Roeland Merks.
 #
-
 CONFIG += release
 CONFIG -= debug
 CONFIG += plugin
-
+CONFIG += c++17
 BINDIR = ../../../bin
 LIBDIR = ../../../lib
 INCLUDEPATH += ../../Library
 INCLUDEPATH += ../../GUI
 INCLUDEPATH += ../../../include
-
 DEFINES = QTGRAPHICS
 DESTDIR = $${BINDIR}/models
 TARGET = pyadapter
-
 win32-g++|unix|macx {
     QMAKE_CXXFLAGS += -Wall -Wextra
     QMAKE_CXXFLAGS += -Wno-unused-parameter
     QMAKE_CXXFLAGS += -Wno-write-strings
 }
-
 # MSVC
 win32-msvc {
     QMAKE_CXXFLAGS += /W3
@@ -45,18 +40,22 @@ win32-msvc {
 }
 QMAKE_CXXFLAGS_DEBUG += -g3
 QMAKE_CXXFLAGS_DEBUG += -DQDEBUG
-
 QT += widgets xml
 HEADERS = $${TARGET}.h
 SOURCES = $${TARGET}.cpp
 TEMPLATE = lib 
-
 unix {
  LIBS += -L$${LIBDIR} -lvleaf
+
+ # --- Stage 2: pybind11 + embedded Python interpreter ---
+ INCLUDEPATH += /usr/include/python3.14
+ INCLUDEPATH += ../../../extern/pybind11/include
+ LIBS += -L/usr/lib64 -lpython3.14 -ldl -lm
+ # ---------------------------------------------------------
+
  QMAKE_CXXFLAGS += -fPIC -I/usr/include/libxml2
  QMAKE_LFLAGS += -fPIC
 }
-
 win32 {
  LIBXML2DIR = $${LIBDIR}\libxml2
  LIBICONVDIR = $${LIBDIR}\libiconv
@@ -64,7 +63,5 @@ win32 {
  LIBS += -L$${LIBDIR} -Llib -lvleaf
  QMAKE_CXXFLAGS += -DLIBXML_STATIC
  QMAKE_CXXFLAGS += -I$${LIBXML2DIR}\include -I$${LIBICONVDIR}\include -I$${LIBZDIR}\include
-
 }
-
 # finis

@@ -34,6 +34,7 @@ class PyAdapter : public QObject, SimPluginInterface {
 
 public:
     PyAdapter();
+	virtual ~PyAdapter();
 	virtual QString ModelID(void);
 	
 	// Executed after the cellular mechanics steps have equillibrized
