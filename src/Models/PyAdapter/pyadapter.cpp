@@ -5,39 +5,50 @@
 
 namespace py= pybind11;
 
+
+
+// The real definition of PyBridge — only visible in this file.
+struct PyAdapter::PyBridge {
+    py::object instance;   // the cached Python object, e.g. a TestModel()
+};
+
 PyAdapter::PyAdapter() {
     qDebug() << "Hello from PyAdapter" << this;
+
     py::initialize_interpreter();
     qDebug() << "Python interpreter initialized" << this;
 
-    py::exec("print('hello from embedded python')");
+    bridge = new PyBridge();
 
-
-
-    // Make our test folder visible to Python's import system
+    // Make our python_models folder visible to Python's import system
     py::module_::import("sys").attr("path").attr("insert")(0, "../python_models");
 
-    // Import the file and call the function inside it
-    py::module_ greet_module = py::module_::import("greet");
-    py::object result = greet_module.attr("greet")("World");
+    // Import the test module, construct ONE instance, cache it for this plugin's lifetime
+    py::module_ test_module = py::module_::import("test_model");
+    bridge->instance = test_module.attr("TestModel")();
 
-    // Convert Python's return value into something C++/Qt can print
-    std::string message = result.cast<std::string>();
-    qDebug() << "From Python:" << QString::fromStdString(message);
-
+    qDebug() << "Cached Python object, ready to delegate calls" << this;
 }
 
 PyAdapter::~PyAdapter() {
     qDebug() << "PyAdapter destructor - shutting down Python interpreter" << this;
+
+       // bridge->instance holds a live Python reference. It MUST be destroyed
+    // while the interpreter is still running - deleting bridge here does that,
+    // before finalize_interpreter() tears the interpreter down.
+    delete bridge;
+    bridge = nullptr;
+
     py::finalize_interpreter();
+
 }
 
 QString PyAdapter::ModelID(void) {
-    return QString("PyAdapter");
-}
+    std::string id = bridge->instance.attr("model_id")().cast<std::string>();
+    return QString::fromStdString(id);}
 
-int PyAdapter::NChem(void) { return 0;
-}
+int PyAdapter::NChem(void) {
+    return bridge->instance.attr("n_chem")().cast<int>();}
 
 void PyAdapter::CellHouseKeeping(CellBase *c) {
 }
