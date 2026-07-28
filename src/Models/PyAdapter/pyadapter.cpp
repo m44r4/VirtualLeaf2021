@@ -34,7 +34,7 @@ PYBIND11_EMBEDDED_MODULE(virtualleaf, m) {
     //     .def_readonly("rel_cell_div_threshold", &Parameter::rel_cell_div_threshold);
     
     // m.attr("par") = py::cast(par, py::return_value_policy::reference);    
-    
+
     }
 
 
@@ -120,4 +120,8 @@ void PyAdapter::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase 
 }
 
 void PyAdapter::SetCellColor(CellBase *c, QColor *color) {
+    if (!pythonReady) return;
+    std::string colorName = bridge->instance.attr("set_cell_color")(c).cast<std::string>();
+    color->setNamedColor(QString::fromStdString(colorName));
+
 }

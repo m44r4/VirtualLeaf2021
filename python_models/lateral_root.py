@@ -34,6 +34,16 @@ class lateral_root:
                 if cell.area() > par.rel_cell_div_threshold * virtualleaf.base_area():
                     print(virtualleaf.base_area())
                     cell.divide()
-                    
+
+    def set_cell_color(self, cell):
+        if cell.cell_type() == 3:
+            if cell.chemical(0) > 0.5 or cell.chemical(0) < 0.001:
+                return "red"
+            else:
+                return "green"
+        else:
+            return "blue"
+
+
 
  
