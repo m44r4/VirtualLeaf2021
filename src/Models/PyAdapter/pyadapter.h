@@ -56,11 +56,13 @@ public:
 	virtual void SetCellColor(CellBase *c, QColor *color);	
 	// return number of chemicals
 	virtual int NChem(void);
-    virtual QString DefaultLeafML(void) { return QString("smalltissue.xml"); }
+    virtual QString DefaultLeafML(void) { return QString("lateralRoot.xml"); }
 
 private:
-    struct PyBridge;      // declared here, DEFINED only in pyadapter.cpp
+    struct PyBridge;      
     PyBridge *bridge = nullptr;
+	bool pythonReady = false;
+
 };
 
 

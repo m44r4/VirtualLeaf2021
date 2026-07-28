@@ -6,4 +6,5 @@ class TestModel:
         return 6
     
     def cell_housekeeping(self, cell):
-        print(cell.cell_type())
+        return cell.cell_type()
+        # print(cell.cell_type())
