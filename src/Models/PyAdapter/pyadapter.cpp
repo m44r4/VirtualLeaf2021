@@ -29,11 +29,10 @@ PYBIND11_EMBEDDED_MODULE(virtualleaf, m) {
 
     py::class_<ParentInfo>(m, "ParentInfo");
 
-    // py::class_<Parameter>(m, "Parameter")
-    //     .def_readonly("cell_expansion_rate", &Parameter::cell_expansion_rate)
-    //     .def_readonly("rel_cell_div_threshold", &Parameter::rel_cell_div_threshold);
-    
-    // m.attr("par") = py::cast(par, py::return_value_policy::reference);    
+    // nodelete: Python must never own/free this — it's a reference to the app's global par.
+    py::class_<Parameter, std::unique_ptr<Parameter, py::nodelete>>(m, "Parameter")
+        .def_readonly("cell_expansion_rate", &Parameter::cell_expansion_rate)
+        .def_readonly("rel_cell_div_threshold", &Parameter::rel_cell_div_threshold);
 
     }
 
@@ -124,4 +123,10 @@ void PyAdapter::SetCellColor(CellBase *c, QColor *color) {
     std::string colorName = bridge->instance.attr("set_cell_color")(c).cast<std::string>();
     color->setNamedColor(QString::fromStdString(colorName));
 
+}
+
+void PyAdapter::SetParameters(Parameter *pass_pars) {
+    SimPluginInterface::SetParameters(pass_pars);
+    if (!pythonReady) return;
+    bridge->instance.attr("par") = py::cast(pass_pars, py::return_value_policy::reference);
 }

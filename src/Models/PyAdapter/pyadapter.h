@@ -58,6 +58,9 @@ public:
 	virtual int NChem(void);
     virtual QString DefaultLeafML(void) { return QString("lateralRoot.xml"); }
 
+	// called by the host once the plugin is installed; propagates par to Python
+	virtual void SetParameters(Parameter *pass_pars);
+
 private:
     struct PyBridge;      
     PyBridge *bridge = nullptr;

@@ -1,12 +1,7 @@
 import virtualleaf
 print("loaded lateral_root from:", __file__)
 print("virtualleaf module object:", virtualleaf)
- 
-class Par:
-    def __init__(self, cell_expansion_rate,rel_cell_div_threshold):
-        self.rel_cell_div_threshold=rel_cell_div_threshold
-        self.cell_expansion_rate=cell_expansion_rate
-    
+
 
 class lateral_root:
     def model_id(self):
@@ -27,11 +22,10 @@ class lateral_root:
 
     
     def cell_housekeeping(self, cell):
-        par = Par(1.0,2.0)
         if cell.cell_type() == 3:
             if cell.chemical(0) > 0.5 or cell.chemical(0) < 0.001:
-                cell.enlarge_target_area(par.cell_expansion_rate)
-                if cell.area() > par.rel_cell_div_threshold * virtualleaf.base_area():
+                cell.enlarge_target_area(self.par.cell_expansion_rate)
+                if cell.area() > self.par.rel_cell_div_threshold * virtualleaf.base_area():
                     print(virtualleaf.base_area())
                     cell.divide()
 
