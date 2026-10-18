@@ -26,7 +26,7 @@ INCLUDEPATH += ../../GUI
 INCLUDEPATH += ../../../include
 DEFINES = QTGRAPHICS
 DESTDIR = $${BINDIR}/models
-TARGET = pyadapter
+TARGET = PyLateralRoot
 win32-g++|unix|macx {
     QMAKE_CXXFLAGS += -Wall -Wextra
     QMAKE_CXXFLAGS += -Wno-unused-parameter

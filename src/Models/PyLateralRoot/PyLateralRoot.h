@@ -27,14 +27,14 @@
 #include "simplugin.h"
 
 
-class PyAdapter : public QObject, SimPluginInterface {
+class PyLateralRoot : public QObject, SimPluginInterface {
 	Q_OBJECT
 	Q_INTERFACES(SimPluginInterface);
-     Q_PLUGIN_METADATA(IID "org.virtualleaf.PyAdapter")
+     Q_PLUGIN_METADATA(IID "org.virtualleaf.PyLateralRoot")
 
 public:
-    PyAdapter();
-	virtual ~PyAdapter();
+    PyLateralRoot();
+	virtual ~PyLateralRoot();
 	virtual QString ModelID(void);
 	
 	// Executed after the cellular mechanics steps have equillibrized

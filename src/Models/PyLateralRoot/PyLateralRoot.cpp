@@ -1,6 +1,6 @@
 #include <pybind11/embed.h>
 //guarantees Python's headers get fully processed before Qt's slots macro exists at all. 
-#include "pyadapter.h"
+#include "PyLateralRoot.h"
 #include <QDebug>
 
 namespace py= pybind11;
@@ -8,7 +8,7 @@ namespace py= pybind11;
 
 
 // The real definition of PyBridge — only visible in this file.
-struct PyAdapter::PyBridge {
+struct PyLateralRoot::PyBridge {
     py::object instance;   // the cached Python object, e.g. a TestModel()
 };
 
@@ -37,8 +37,8 @@ PYBIND11_EMBEDDED_MODULE(virtualleaf, m) {
     }
 
 
-PyAdapter::PyAdapter() {
-    qDebug() << "Hello from PyAdapter" << this;
+PyLateralRoot::PyLateralRoot() {
+    qDebug() << "Hello from PyLateralRoot" << this;
 
     py::initialize_interpreter();
     qDebug() << "Python interpreter initialized" << this;
@@ -63,15 +63,15 @@ try{
 
     pythonReady = true; 
 } catch (const py::error_already_set &e){
-        qDebug() << "Python error during PyAdapter setup:" << e.what();
+        qDebug() << "Python error during PyLateralRoot setup:" << e.what();
 }
    
 
     qDebug() << "Cached Python object, ready to delegate calls" << this;
 }
 
-PyAdapter::~PyAdapter() {
-    qDebug() << "PyAdapter destructor - shutting down Python interpreter" << this;
+PyLateralRoot::~PyLateralRoot() {
+    qDebug() << "PyLateralRoot destructor - shutting down Python interpreter" << this;
 
        // bridge->instance holds a live Python reference. It MUST be destroyed
     // while the interpreter is still running - deleting bridge here does that,
@@ -85,11 +85,11 @@ PyAdapter::~PyAdapter() {
 
 
 
-QString PyAdapter::ModelID(void) {
+QString PyLateralRoot::ModelID(void) {
     std::string id = bridge->instance.attr("model_id")().cast<std::string>();
     return QString::fromStdString(id);}
 
-int PyAdapter::NChem(void) {
+int PyLateralRoot::NChem(void) {
     if (!pythonReady)
     {
         return 0;
@@ -97,35 +97,35 @@ int PyAdapter::NChem(void) {
     
     return bridge->instance.attr("n_chem")().cast<int>();}
 
-void PyAdapter::CellHouseKeeping(CellBase *c) {
+void PyLateralRoot::CellHouseKeeping(CellBase *c) {
     if (!pythonReady) return;
     bridge->instance.attr("cell_housekeeping")(c);
 }
 
-void PyAdapter::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {
+void PyLateralRoot::CelltoCellTransport(Wall *w, double *dchem_c1, double *dchem_c2) {
     
 }
 
-void PyAdapter::WallDynamics(Wall *w, double *dw1, double *dw2) {
+void PyLateralRoot::WallDynamics(Wall *w, double *dw1, double *dw2) {
 }
 
-void PyAdapter::CellDynamics(CellBase *c, double *dchem) {
+void PyLateralRoot::CellDynamics(CellBase *c, double *dchem) {
 }
 
-void PyAdapter::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2) {
+void PyLateralRoot::OnDivide(ParentInfo *parent_info, CellBase *daughter1, CellBase *daughter2) {
     if (!pythonReady) return;
     bridge->instance.attr("on_divide")(parent_info, daughter1, daughter2);
 
 }
 
-void PyAdapter::SetCellColor(CellBase *c, QColor *color) {
+void PyLateralRoot::SetCellColor(CellBase *c, QColor *color) {
     if (!pythonReady) return;
     std::string colorName = bridge->instance.attr("set_cell_color")(c).cast<std::string>();
     color->setNamedColor(QString::fromStdString(colorName));
 
 }
 
-void PyAdapter::SetParameters(Parameter *pass_pars) {
+void PyLateralRoot::SetParameters(Parameter *pass_pars) {
     SimPluginInterface::SetParameters(pass_pars);
     if (!pythonReady) return;
     bridge->instance.attr("par") = py::cast(pass_pars, py::return_value_policy::reference);
